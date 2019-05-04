@@ -1,10 +1,9 @@
 import random
 import sys
-from Environment import Environment
 from Action import Action
 import numpy as np
 
-class Snake(Environment):
+class Snake():
     def __init__(self, width, height):
         self.text = "O"
         # whether we lost the game or not
