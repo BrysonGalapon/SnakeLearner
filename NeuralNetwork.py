@@ -18,4 +18,16 @@ class NeuralNetwork(object):
     def mutate(self):
         pass
 
+    '''
+    Perform an NN calculation. 
+
+    Takes in a (NUM_IN, 1) numpy array representing
+        the input of the NN calculation
+    
+    Returns a (NUM_OUT, 1) numpy array representing
+        the output of the NN calculation.
+    '''
+    def output(self, inp):
+        pass
+
     

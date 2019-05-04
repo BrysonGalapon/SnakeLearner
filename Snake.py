@@ -23,23 +23,10 @@ class Snake():
         self.lac = 0
 
     def getCurrentState(self):
-        head = [[0]*self.width for _ in range(self.height)]
-        snake = [[0]*self.width for _ in range(self.height)]
-        apple = [[0]*self.width for _ in range(self.height)]
+        pass
 
-        # populate head channel
-        head_x, head_y = self.snake_pos[0]
-        head[head_y][head_x] = 1
-
-        # populate snake body channel
-        for pos_x, pos_y in self.snake_pos:
-            snake[pos_y][pos_x] = 1
-
-        # populate apple channel
-        app_x, app_y = self.apple_pos
-        apple[app_y][app_x] = 1
-
-        return np.dstack( (snake, head, apple) )
+    def score(self):
+        pass
 
     def getCurrentActions(self):
         actions = []
