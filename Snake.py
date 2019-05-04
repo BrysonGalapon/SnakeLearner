@@ -21,12 +21,14 @@ class Snake():
         self.apple_pos = self.random_apple_pos()
         # time since last apple capture
         self.lac = 0
+        # length of max game
+        self.max_game_steps = (width*height)**2
 
     def getCurrentState(self):
         pass
 
-    def score(self):
-        pass
+    def score(self, length_weight=1000, step_weight=-1):
+        return length_weight*len(self.snake_pos) + step_weight*self.game_counter
 
     def getCurrentActions(self):
         actions = []
@@ -54,7 +56,7 @@ class Snake():
         return self.game_counter
 
     def alive(self):
-        return not self.lose
+        return not self.lose and self.game_counter < self.max_game_steps
 
     def step(self, inp):
         # don't do anything if we lost
