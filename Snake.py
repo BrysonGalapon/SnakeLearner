@@ -21,26 +21,29 @@ class Snake():
         self.apple_pos = self.random_apple_pos()
         # time since last apple capture
         self.lac = 0
-        # length of max game
-        self.max_game_steps = (width*height)**2
+        # number of steps before snake starvs
+        self.max_snake_starve = 2*(width*height)
 
+    '''
+    Returns a numpy array with 1 column and the following rows:
+        - isHeadGoingUp (0 or 1)
+        - isHeadGoingLeft (0 or 1)
+        - isHeadGoingRight (0 or 1)
+        - isHeadGoingDown (0 or 1)
+        - horizontal distance from head to apple
+        - vertical distance from head to apple
+        - vertical distance from head to apple
+    '''
     def getCurrentState(self):
-        pass
 
-    def score(self, length_weight=1000, step_weight=-1):
-        return length_weight*len(self.snake_pos) + step_weight*self.game_counter
+    def score(self, length_weight=1000, starve_weight=-1, game_len_weight=-1):
+        return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*game.counter
 
     def getCurrentActions(self):
         actions = []
         for act in Action:
             actions.append(act)
         return actions
-
-    def perform(self, action):
-        if self.step(action):
-            return (1.0/ ( 0.1 + self.headDist()) ) + (10.0*self.snake_length() - 2e-2*self.lac)
-        else:
-            return -1*sys.maxsize
 
     # Manhattan distance to apple
     def headDist(self):
@@ -56,7 +59,7 @@ class Snake():
         return self.game_counter
 
     def alive(self):
-        return not self.lose and self.game_counter < self.max_game_steps
+        return not self.lose and self.lac < self.max_snake_starve
 
     def step(self, inp):
         # don't do anything if we lost
