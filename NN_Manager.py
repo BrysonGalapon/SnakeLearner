@@ -13,7 +13,7 @@ class NN_Manager(object):
         self.POPULATION_SIZE = 50
 
         # a list of nn generations
-        self.generations = []
+        self.generations = [gen0]
 
     '''
     Performs a cross-over between two NNs, not modifying either NNs,
@@ -45,15 +45,32 @@ class NN_Manager(object):
         POPULATION_SIZE NNs
     '''
     def breed(self, i):
-        pass
+        curr_gen = self.generations[i]
+        next_gen = self.generations[i+1]
+
+        while len(next_gen) < self.POPULATION_SIZE:
+            # select 2 parents uniformly at random
+            [p1, p2] = np.sample(curr_gen, 2)
+
+            # bebe making ;)
+            child = self.cross(p1, p2)
+            # bebes gotta be different than each other!
+            child.mutate()
+
+            next_gen.append(child)
 
     '''
     Simulates evolution for a fixed number of generations
     '''
     def evolve(self, numGenerations=10):
+        # allocate space for numGenerations elements (1-indexed)
+        while len(self.generations) <= numGenerations:
+            self.generations.append([])
+
         # breed the first generation of NNs
         self.breed(0)
 
+        # note that i is 1-indexed
         for i in range(1, numGenerations+1):
             print("Generation {}: Playing ...".format(i))
             self.play(i)
