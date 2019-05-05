@@ -1,5 +1,15 @@
 import random
 import numpy as np
+from Mutation import *
+
+# really rough guestimates at mean and std -- accuracy isn't really important here,
+#   since we just want to get values somewhat close to 0
+INP_MEAN = np.array([0.5, 0.5, 0.5, 0.5, 3, 3, 3, 3, 3, 3, 0])
+INP_STD = np.array([1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 10])
+
+NEW_LINK_WEIGHT_LIMIT = 2
+SCALE_WEIGHT_LIMIT = 2
+TOGGLE_FREQ = 0.2
 
 def relu(x):
     return x if x > 0 else 0
@@ -16,15 +26,54 @@ class NeuralNetwork(object):
     Returns a deep copy of this NN
     '''
     def deepCopy(self):
-        pass
+        nn_copy = NeuralNetwork(self.num_inputs, self.num_outputs)
+        nn_copy.weight = np.copy(self.weight)
+        nn_copy.bias = np.copy(self.bias)
+
+        return nn_copy
 
     '''
     Mutates this NN (in-place)
 
-    One of the following NN mutations is performed uniformly at random
+    One of the following NN mutations is performed uniformly at random:
+        - Add a new link with weight between [-NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT]
+        - Toggle links at a rate of TOGGLE_FREQ
+        - Scale the link weight by a random float between [0, SCALE_WEIGHT_LIMIT]
     '''
     def mutate(self):
-        pass
+        mutation = random.choice([ADD_NEW_LINK, TOGGLE_LINKS, SCALE_LINK])
+
+        if mutation == ADD_NEW_LINK:
+            # random link
+            i, j = random.randint(self.num_inputs), random.randint(self.num_outputs)
+            # random weight
+            rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+            # assign weight
+            self.weight[i][j] = rw
+
+        elif mutation == TOGGLE_LINKS:
+            for i in range(self.num_inputs):
+                for j in range(self.num_outputs):
+                    # flip coin
+                    if random.uniform(0, 1) < TOGGLE_FREQ:
+                        if self.weight[i][j] == 0:
+                            # turn link on with random weight
+                            rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+                            # assign weight
+                            self.weight[i][j] = rw
+                        else:
+                            self.weight[i][j] = 0
+
+        elif mutation == SCALE_LINK:
+            # random link
+            i, j = random.randint(self.num_inputs), random.randint(self.num_outputs)
+            # random scale factor
+            sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
+            # scale weight
+            self.weight[i][j] *= sf
+
+        else:
+            raise Error("Unexpected mutation choice: {}".format(mutation))
 
     '''
     Perform an NN calculation. 
@@ -36,5 +85,9 @@ class NeuralNetwork(object):
         the output of the NN calculation.
     '''
     def output(self, inp):
-        z = np.dot(inp, self.weight)+self.bias
+        norm_inp = self.normalize(inp)
+        z = np.dot(norm_inp, self.weight)+self.bias
         return np.apply_along_axis(relu, axis=0, arr=z)
+
+    def normalize(self, x):
+        return (x-INP_MEAN)/INP_STD
