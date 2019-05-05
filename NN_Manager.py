@@ -1,5 +1,6 @@
 import random
 from SnakeAI import SnakeAI
+import numpy as np
 
 class NN_Manager(object):
     '''
@@ -7,7 +8,7 @@ class NN_Manager(object):
     '''
     def __init__(self, adam, eve):
         # each generation is a list of (NN, fitness) tuples
-        gen0 = [[adam, None], [eve, None]]
+        gen0 = [[adam, 0], [eve, 0]]
 
         # the number of NNs in the latest nonzero generation
         self.POPULATION_SIZE = 50
@@ -41,18 +42,25 @@ class NN_Manager(object):
 
         # sort by fitness in decreasing order
         nn_rankings = sorted(self.generations[i], key=lambda x:x[1], reverse=True)
-        for i, nn_tuple in enumerate(nn_rankings):
+        for index, nn_tuple in enumerate(nn_rankings):
             # select a certain fraction of top-performers
-            if i < num_top_perf:
+            if index < num_top_perf:
                 chosen_ones.append(nn_tuple)
                 continue
 
             # randomly select bottom performers
-            if np.uniform(0, 1) < self.SELECTION_BOT_FREQ:
+            if random.uniform(0, 1) < self.SELECTION_BOT_FREQ:
                 chosen_ones.append(nn_tuple)
 
         # overwrite generation with only selected NNs
         self.generations[i] = chosen_ones
+
+    '''
+    Obtains the strongest NN in generation i
+    '''
+    def getStrongest(self, i):
+        nn_rankings = sorted(self.generations[i], key=lambda x:x[1], reverse=True)
+        return nn_rankings[0]
 
     '''
     Breeds all NNs left in generation i, creating generation i+1 with 
@@ -64,7 +72,7 @@ class NN_Manager(object):
 
         while len(next_gen) < self.POPULATION_SIZE:
             # select 2 parents uniformly at random
-            [(p1, f1), (p2, f2)] = np.sample(curr_gen, 2)
+            [[p1, f1], [p2, f2]] = random.sample(curr_gen, 2)
 
             # bebe making ;), while prioritizing the more fit parent
             if f1 > f2:
@@ -75,7 +83,7 @@ class NN_Manager(object):
             # bebes gotta be different than each other!
             child.mutate()
 
-            next_gen.append( (child, None) )
+            next_gen.append( [child, None] )
 
     '''
     Simulates evolution for a fixed number of generations
@@ -89,11 +97,18 @@ class NN_Manager(object):
         self.breed(0)
 
         # note that i is 1-indexed
-        for i in range(1, numGenerations+1):
+        for i in range(1, numGenerations):
             print("Generation {}: Playing ...".format(i))
             self.play(i)
             print("Generation {}: Killing off the weak ...".format(i))
             self.selection(i)
             print("Generation {}: Rewarding the strong ;) ...".format(i))
             self.breed(i)
+
+        # select best NN from last generation
+        print("Generation {}: Playing ...".format(numGenerations))
+        self.play(numGenerations)
+        print("Generation {}: Selecting the strongest ...".format(numGenerations))
+        best_nn, best_fitness = self.getStrongest(numGenerations)
+        print("Generation {}: best nn score: ", best_fitness)
 

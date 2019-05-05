@@ -15,7 +15,7 @@ class SnakeAI(object):
             state = self.snake.getCurrentState()
             out = self.nn.output(state)
             action = self.translateOutput(out)
-            snake.step(action)
+            self.snake.step(action)
 
         return self.snake.score()
 

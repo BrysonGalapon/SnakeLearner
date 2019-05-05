@@ -44,7 +44,7 @@ class Snake():
         # ignore head and tail, since we can't move to hit head, and
         #   we can't hit the tail if there is a straight-line path to the tail
         #   on this turn
-        snakeBody = set(snake_pos[1:-1])
+        snakeBody = set(self.snake_pos[1:-1])
 
         # direction state
         isHeadGoingUp = self.snake_dir == Action.UP
@@ -98,7 +98,7 @@ class Snake():
         return np.array([state_vec])
 
     def score(self, length_weight=1000, starve_weight=-1, game_len_weight=-1):
-        return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*game.counter
+        return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*self.game_counter
 
     def getCurrentActions(self):
         actions = []
