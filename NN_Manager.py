@@ -11,7 +11,7 @@ class NN_Manager(object):
         gen0 = [[adam, 0], [eve, 0]]
 
         # the number of NNs in the latest nonzero generation
-        self.POPULATION_SIZE = 50
+        self.POPULATION_SIZE = 200
         # the fraction of top-performing NNs that are selected
         self.SELECTION_TOP_FRAC = 0.25
         # approximate frequency of bottom-performing NNs that are selected
@@ -63,6 +63,14 @@ class NN_Manager(object):
         return nn_rankings[0]
 
     '''
+    Display the strongest game from generation i
+    '''
+    def showBestNNFromGen(self, i):
+        nn, score = self.getStrongest(i)
+        ai = SnakeAI(nn)
+        ai.play(show=True)
+
+    '''
     Breeds all NNs left in generation i, creating generation i+1 with 
         POPULATION_SIZE NNs
     '''
@@ -104,6 +112,18 @@ class NN_Manager(object):
             self.selection(i)
             print("Generation {}: Rewarding the strong ;) ...".format(i))
             self.breed(i)
+            print("Generation {}: Showing game from strongest NN ...".format(i))
+            self.showBestNNFromGen(i)
+
+        # select best NN from last generation
+        print("Generation {}: Playing ...".format(numGenerations))
+        self.play(numGenerations)
+        print("Generation {}: Selecting the absolute champion ...".format(numGenerations))
+        best_nn, best_fitness = self.getStrongest(numGenerations)
+        print("Generation {}: best nn score: {}".format(numGenerations, best_fitness))
+        print("Generation {}: Showing chamption NN ...".format(numGenerations))
+        self.showBestNNFromGen(numGenerations)
+
 
         # select best NN from last generation
         print("Generation {}: Playing ...".format(numGenerations))

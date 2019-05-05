@@ -14,7 +14,7 @@ class Snake():
         # count number of moves made
         self.game_counter = 0
         # positions where snake is
-        self.snake_pos = [(2,0),(1,0),(0,0)]
+        self.snake_pos = self.init_snake_pos()
         # current direction snake is heading
         self.snake_dir = Action.DOWN
         # current apple position
@@ -97,7 +97,7 @@ class Snake():
 
         return np.array([state_vec])
 
-    def score(self, length_weight=1000, starve_weight=-1, game_len_weight=-1):
+    def score(self, length_weight=1000, starve_weight=-0.5, game_len_weight=1):
         return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*self.game_counter
 
     def getCurrentActions(self):
@@ -228,6 +228,13 @@ class Snake():
             apple_y = random.randint(0, self.height-1)
         return (apple_x, apple_y)
 
+    def init_snake_pos(self):
+        # give room for body of 3
+        head_x = random.randint(2, self.width-1)
+        head_y = random.randint(0, self.height-1)
+
+        return [(head_x, head_y), (head_x-1, head_y), (head_x-2, head_y)]
+
     def getChar(self, i):
         if i >= len(self.text):
             return "."
@@ -249,6 +256,7 @@ class Snake():
 
         # translate board to string
         output = "Enter 1,2,3,4 to move UP, DOWN, LEFT, or RIGHT. Press q to exit. \n"
+        output += "Score: "+ str(self.score()) + "\n"
         output += "-"*(self.width+2) + "\n"
         for y in range(len(board)):
             output += "|"
