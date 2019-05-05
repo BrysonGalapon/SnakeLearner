@@ -11,16 +11,13 @@ class NN_Manager(object):
 
         # the number of NNs in the latest nonzero generation
         self.POPULATION_SIZE = 50
+        # the fraction of top-performing NNs that are selected
+        self.SELECTION_TOP_FRAC = 0.25
+        # approximate frequency of bottom-performing NNs that are selected
+        self.SELECTION_BOT_FREQ = 0.2
 
         # a list of nn generations
         self.generations = [gen0]
-
-    '''
-    Performs a cross-over between two NNs, not modifying either NNs,
-        and returns the crossed-over NN
-    '''
-    def cross(self, nn_1, nn_2):
-        pass
 
     '''
     Obtains the fitness score for each NN
@@ -38,7 +35,24 @@ class NN_Manager(object):
     Emulates "survival of the fittest". Removes NNs in generation i that are "unfit"
     '''
     def selection(self, i):
-        pass
+        # keep track of selected NNs
+        chosen_ones = []
+        num_top_perf = int(self.POPULATION_SIZE*self.SELECTION_TOP_FRAC)
+
+        # sort by fitness in decreasing order
+        nn_rankings = sorted(self.generations[i], key=lambda x:x[1], reverse=True)
+        for i, nn_tuple in enumerate(nn_rankings):
+            # select a certain fraction of top-performers
+            if i < num_top_perf:
+                chosen_ones.append(nn_tuple)
+                continue
+
+            # randomly select bottom performers
+            if np.uniform(0, 1) < self.SELECTION_BOT_FREQ:
+                chosen_ones.append(nn_tuple)
+
+        # overwrite generation with only selected NNs
+        self.generations[i] = chosen_ones
 
     '''
     Breeds all NNs left in generation i, creating generation i+1 with 
@@ -50,14 +64,18 @@ class NN_Manager(object):
 
         while len(next_gen) < self.POPULATION_SIZE:
             # select 2 parents uniformly at random
-            [p1, p2] = np.sample(curr_gen, 2)
+            [(p1, f1), (p2, f2)] = np.sample(curr_gen, 2)
 
-            # bebe making ;)
-            child = self.cross(p1, p2)
+            # bebe making ;), while prioritizing the more fit parent
+            if f1 > f2:
+                child = p1.cross(p2)
+            else:
+                child = p2.cross(p1)
+
             # bebes gotta be different than each other!
             child.mutate()
 
-            next_gen.append(child)
+            next_gen.append( (child, None) )
 
     '''
     Simulates evolution for a fixed number of generations

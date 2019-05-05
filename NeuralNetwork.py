@@ -76,6 +76,20 @@ class NeuralNetwork(object):
             raise Error("Unexpected mutation choice: {}".format(mutation))
 
     '''
+    Performs a cross-over between this NN and another NN, and returns the crossed over NN.
+        The genes of this NN are prioritized in the cross over
+    '''
+    def cross(self, other):
+        # prioritize the current genes by copying them over first
+        child = self.deepCopy()
+
+        for i in range(self.num_inputs):
+            for j in range(self.num_outputs):
+                # only express other genes if they haven't already been set
+                if other.weight[i][j] != 0 and child.weight[i][j] == 0:
+                    child.weight[i][j] = other.weight[i][j]
+
+    '''
     Perform an NN calculation. 
 
     Takes in a (1, NUM_IN) numpy array representing
