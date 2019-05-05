@@ -25,7 +25,7 @@ class Snake():
         self.max_snake_starve = 2*(width*height)
 
     '''
-    Returns a numpy array with 1 column and the following rows:
+    Returns a numpy array with 1 row and the following columns (in order):
         - isHeadGoingUp (0 or 1)
         - isHeadGoingDown (0 or 1)
         - isHeadGoingLeft (0 or 1)
@@ -95,7 +95,7 @@ class Snake():
                      rdo,
                      length]
 
-        return np.array([state_vec]).T
+        return np.array([state_vec])
 
     def score(self, length_weight=1000, starve_weight=-1, game_len_weight=-1):
         return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*game.counter
