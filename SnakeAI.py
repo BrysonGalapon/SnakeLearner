@@ -1,6 +1,7 @@
 from Snake import Snake
 from Action import Action
 import numpy as np
+import time
 
 class SnakeAI(object):
     def __init__(self, nn, width=10, height=10):
@@ -10,12 +11,16 @@ class SnakeAI(object):
     '''
     Plays a game of Snake. Returns game score.
     '''
-    def play(self):
+    def play(self, show=False):
         while self.snake.alive():
+            if show:
+                print(self.snake)
+                time.sleep(1)
+
             state = self.snake.getCurrentState()
             out = self.nn.output(state)
             action = self.translateOutput(out)
-            snake.step(action)
+            self.snake.step(action)
 
         return self.snake.score()
 

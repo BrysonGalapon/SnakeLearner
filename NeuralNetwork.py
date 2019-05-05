@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from Mutation import *
+from Mutation import Mutation
 
 # really rough guestimates at mean and std -- accuracy isn't really important here,
 #   since we just want to get values somewhat close to 0
@@ -41,17 +41,19 @@ class NeuralNetwork(object):
         - Scale the link weight by a random float between [0, SCALE_WEIGHT_LIMIT]
     '''
     def mutate(self):
-        mutation = random.choice([ADD_NEW_LINK, TOGGLE_LINKS, SCALE_LINK])
+        mutation = random.choice([Mutation.ADD_NEW_LINK, 
+                                  Mutation.TOGGLE_LINKS, 
+                                  Mutation.SCALE_LINK])
 
-        if mutation == ADD_NEW_LINK:
+        if mutation == Mutation.ADD_NEW_LINK:
             # random link
-            i, j = random.randint(self.num_inputs), random.randint(self.num_outputs)
+            i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
             # random weight
             rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
             # assign weight
             self.weight[i][j] = rw
 
-        elif mutation == TOGGLE_LINKS:
+        elif mutation == Mutation.TOGGLE_LINKS:
             for i in range(self.num_inputs):
                 for j in range(self.num_outputs):
                     # flip coin
@@ -64,9 +66,9 @@ class NeuralNetwork(object):
                         else:
                             self.weight[i][j] = 0
 
-        elif mutation == SCALE_LINK:
+        elif mutation == Mutation.SCALE_LINK:
             # random link
-            i, j = random.randint(self.num_inputs), random.randint(self.num_outputs)
+            i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
             # random scale factor
             sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
             # scale weight
@@ -88,6 +90,7 @@ class NeuralNetwork(object):
                 # only express other genes if they haven't already been set
                 if other.weight[i][j] != 0 and child.weight[i][j] == 0:
                     child.weight[i][j] = other.weight[i][j]
+        return child
 
     '''
     Perform an NN calculation. 

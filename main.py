@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     # Create the grandfaher NNs
     adam = NeuralNetwork(num_inputs, num_outputs)
-    eve = NerualNetwork(num_inputs, num_outputs)
+    eve = NeuralNetwork(num_inputs, num_outputs)
 
     nn_manager = NN_Manager(adam, eve)
 
