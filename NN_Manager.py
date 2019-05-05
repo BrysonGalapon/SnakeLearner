@@ -1,4 +1,5 @@
 import random
+from SnakeAI import SnakeAI
 
 class NN_Manager(object):
     '''
@@ -25,9 +26,13 @@ class NN_Manager(object):
     Obtains the fitness score for each NN
     '''
     def play(self, i):
-        # for each nn in generation i,
-        #   - get fitness score
-        #   - assign fitness score
+        for nn_tuple in self.generations[i]:
+            nn, _ = nn_tuple
+            ai = SnakeAI(nn)
+
+            # get and assign NN fitness 
+            fitness = ai.play()
+            nn_tuple[1] = fitness
 
     '''
     Emulates "survival of the fittest". Removes NNs in generation i that are "unfit"
