@@ -27,15 +27,75 @@ class Snake():
     '''
     Returns a numpy array with 1 column and the following rows:
         - isHeadGoingUp (0 or 1)
+        - isHeadGoingDown (0 or 1)
         - isHeadGoingLeft (0 or 1)
         - isHeadGoingRight (0 or 1)
-        - isHeadGoingDown (0 or 1)
         - horizontal distance from head to apple
         - vertical distance from head to apple
-        - vertical distance from head to apple
+        - upDistanceToObstacle
+        - downDistanceToObstacle
+        - leftDistanceToObstacle
+        - rightDistanceToObstacle
+        - length of snake
     '''
     def getCurrentState(self):
-        pass
+        head_x, head_y = self.snake_pos[0]
+        apple_x, apple_y = self.apple_pos
+        # ignore head and tail, since we can't move to hit head, and
+        #   we can't hit the tail if there is a straight-line path to the tail
+        #   on this turn
+        snakeBody = set(snake_pos[1:-1])
+
+        # direction state
+        isHeadGoingUp = self.snake_dir == Action.UP
+        isHeadGoingDown = self.snake_dir == Action.DOWN
+        isHeadGoingLeft = self.snake_dir == Action.LEFT
+        isHeadGoingRight = self.snake_dir == Action.RIGHT
+
+        # horizontal distance from head to apple (positive dist -> apple is to the right)
+        hdha = apple_x-head_x
+        # horizontal distance from head to apple (positive dist -> apple is above)
+        vdha = -1*(apple_y-head_y)
+
+        # up distance to obstacle
+        curr_x, curr_y = head_x, head_y
+        while (curr_x, curr_y) not in snakeBody and curr_y > 0:
+            curr_y -= 1
+        udo = -1*(curr_y-head_y)
+
+        # down distance to obstacle
+        curr_x, curr_y = head_x, head_y
+        while (curr_x, curr_y) not in snakeBody and curr_y < self.height-1:
+            curr_y += 1
+        ddo = -1*(curr_y-head_y)
+
+        # left distance to obstacle
+        curr_x, curr_y = head_x, head_y
+        while (curr_x, curr_y) not in snakeBody and curr_x > 0:
+            curr_x -= 1
+        ldo = curr_x-head_x
+
+        # left distance to obstacle
+        curr_x, curr_y = head_x, head_y
+        while (curr_x, curr_y) not in snakeBody and curr_x < self.width-1:
+            curr_x += 1
+        rdo = curr_x-head_x
+
+        length = len(self.snake_pos)
+
+        state_vec = [isHeadGoingUp,
+                     isHeadGoingDown,
+                     isHeadGoingLeft,
+                     isHeadGoingRight,
+                     hdha,
+                     vdha,
+                     udo,
+                     ddo,
+                     ldo,
+                     rdo,
+                     length]
+
+        return np.array([state_vec]).T
 
     def score(self, length_weight=1000, starve_weight=-1, game_len_weight=-1):
         return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*game.counter
