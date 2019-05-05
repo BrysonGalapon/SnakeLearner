@@ -121,5 +121,7 @@ class NN_Manager(object):
         print("Generation {}: Selecting the absolute champion ...".format(numGenerations))
         best_nn, best_fitness = self.getStrongest(numGenerations)
         print("Generation {}: best nn score: {}".format(numGenerations, best_fitness))
+        print("Generation {}: Showing chamption NN ...".format(numGenerations))
+        self.showBestNNFromGen(numGenerations)
 
 
