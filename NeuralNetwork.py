@@ -104,7 +104,7 @@ class NeuralNetwork(object):
     def output(self, inp):
         norm_inp = self.normalize(inp)
         z = np.dot(norm_inp, self.weight)+self.bias
-        return np.apply_along_axis(relu, axis=0, arr=z)
+        return z
 
     def normalize(self, x):
         return (x-INP_MEAN)/INP_STD
