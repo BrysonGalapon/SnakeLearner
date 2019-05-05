@@ -35,6 +35,7 @@ class Snake():
         - vertical distance from head to apple
     '''
     def getCurrentState(self):
+        pass
 
     def score(self, length_weight=1000, starve_weight=-1, game_len_weight=-1):
         return length_weight*len(self.snake_pos) + starve_weight*self.lac + game_len_weight*game.counter
@@ -85,7 +86,6 @@ class Snake():
 
         # update snake positions
 
-        # calculate new head, wrapping around if needed
         head = self.snake_pos[0]
         new_head = self.update_pos(head)
         # prepend new head to positions
@@ -114,30 +114,42 @@ class Snake():
     def update_pos(self, pos):
         (x, y) = pos
         if self.snake_dir == Action.UP:
-            # decrement y, wrapping around if neded
+            # decrement y
             x_new = x
             if y == 0:
+                # ran into top wall
+                self.lose = True
+                # pretend to wrap around
                 y_new = self.height-1
             else:
                 y_new = y-1
         elif self.snake_dir == Action.DOWN:
-            # increment y, wrapping around if neded
+            # increment y
             x_new = x
             if y == self.height-1:
+                # ran into bottom wall
+                self.lose = True
+                # pretend to wrap around
                 y_new = 0
             else:
                 y_new = y+1
         elif self.snake_dir == Action.LEFT:
-            # decrement x, wrapping around if neded
+            # decrement x
             y_new = y
             if x == 0:
+                # ran into left wall
+                self.lose = True
+                # pretend to wrap around
                 x_new = self.width-1
             else:
                 x_new = x-1
         elif self.snake_dir == Action.RIGHT:
-            # increment x, wrapping around if neded
+            # increment x
             y_new = y
             if x == self.width-1:
+                # ran into left wall
+                self.lose = True
+                # pretend to wrap around
                 x_new = 0
             else:
                 x_new = x+1
