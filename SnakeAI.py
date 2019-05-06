@@ -4,8 +4,9 @@ import numpy as np
 import time
 
 class SnakeAI(object):
-    def __init__(self, nn, width=15, height=15):
+    def __init__(self, nn, generation, width=15, height=15):
         self.nn = nn
+        self.gen = generation
         self.snake = Snake(width, height)
 
     '''
@@ -14,6 +15,7 @@ class SnakeAI(object):
     def play(self, show=False):
         while self.snake.alive():
             if show:
+                print("Generation: {}".format(self.gen))
                 print(self.snake)
                 time.sleep(0.1)
 

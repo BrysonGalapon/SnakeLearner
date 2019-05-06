@@ -1,6 +1,7 @@
 import random
 from SnakeAI import SnakeAI
 import numpy as np
+from global_vars import *
 
 class NN_Manager(object):
     '''
@@ -26,7 +27,7 @@ class NN_Manager(object):
     def play(self, i):
         for nn_tuple in self.generations[i]:
             nn, _ = nn_tuple
-            ai = SnakeAI(nn)
+            ai = SnakeAI(nn, i)
 
             # get and assign NN fitness 
             fitness = ai.play()
@@ -112,8 +113,14 @@ class NN_Manager(object):
             self.selection(i)
             print("Generation {}: Rewarding the strong ;) ...".format(i))
             self.breed(i)
-            print("Generation {}: Showing game from strongest NN ...".format(i))
-            self.showBestNNFromGen(i)
+
+            nn_tuple, bestGenScore = getStrongest(i)
+            if bestGenScore > best_total_score: 
+                print("Generation {}: Record Breaker! Showing game ...".format(i))
+                self.showBestNNFromGen(i)
+
+                best_total_score = bestGenScore
+                record_breakers.append(nn_tuple)
 
         # select best NN from last generation
         print("Generation {}: Playing ...".format(numGenerations))
