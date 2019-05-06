@@ -50,7 +50,7 @@ class NeuralNetwork(object):
 
         if mutation == Mutation.ADD_NEW_LINK:
             # flip coin to mutate bias link or weight link
-            if random.uniform(0, 1) < BIAS_FRAC: # mutate bias link
+            if random.uniform(0, 1) < self.BIAS_FRAC: # mutate bias link
                 j = random.randrange(self.num_outputs)
                 # random weight
                 rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
@@ -89,7 +89,7 @@ class NeuralNetwork(object):
 
         elif mutation == Mutation.SCALE_LINK:
             # flip coin to mutate bias link or weight link
-            if random.uniform(0, 1) < BIAS_FRAC: # mutate bias link
+            if random.uniform(0, 1) < self.BIAS_FRAC: # mutate bias link
                 j = random.randrange(self.num_outputs)
                 # random scale factor
                 sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
@@ -114,11 +114,18 @@ class NeuralNetwork(object):
         # prioritize the current genes by copying them over first
         child = self.deepCopy()
 
+        # cross over weights
         for i in range(self.num_inputs):
             for j in range(self.num_outputs):
                 # only express other genes if they haven't already been set
                 if other.weight[i][j] != 0 and child.weight[i][j] == 0:
                     child.weight[i][j] = other.weight[i][j]
+
+        # cross over biases
+        for j in range(self.num_outputs):
+            # only express other genes if they haven't already been set
+            if other.bias[0][j] != 0 and child.bias[0][j] == 0:
+                child.bias[0][j] = other.bias[0][j]
         return child
 
     '''
