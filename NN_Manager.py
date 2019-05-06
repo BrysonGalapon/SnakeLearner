@@ -1,7 +1,7 @@
 import random
 from SnakeAI import SnakeAI
 import numpy as np
-from global_vars import *
+import global_vars
 
 class NN_Manager(object):
     '''
@@ -17,6 +17,8 @@ class NN_Manager(object):
         self.SELECTION_TOP_FRAC = 0.25
         # approximate frequency of bottom-performing NNs that are selected
         self.SELECTION_BOT_FREQ = 0.2
+        # the number of past generations to keep (throw away all other generations)
+        self.GENERATION_WINDOW = 3
 
         # a list of nn generations
         self.generations = [gen0]
@@ -68,7 +70,7 @@ class NN_Manager(object):
     '''
     def showBestNNFromGen(self, i):
         nn, score = self.getStrongest(i)
-        ai = SnakeAI(nn)
+        ai = SnakeAI(nn, i)
         ai.play(show=True)
 
     '''
@@ -107,6 +109,10 @@ class NN_Manager(object):
 
         # note that i is 1-indexed
         for i in range(1, numGenerations):
+            # release 'old' NNs that occur before the GENERATION WINDOW
+            if i > self.GENERATION_WINDOW:
+                self.generations[i-self.GENERATION_WINDOW] = []
+
             print("Generation {}: Playing ...".format(i))
             self.play(i)
             print("Generation {}: Killing off the weak ...".format(i))
@@ -114,13 +120,13 @@ class NN_Manager(object):
             print("Generation {}: Rewarding the strong ;) ...".format(i))
             self.breed(i)
 
-            nn_tuple, bestGenScore = getStrongest(i)
-            if bestGenScore > best_total_score: 
+            nn_tuple, bestGenScore = self.getStrongest(i)
+            if bestGenScore > global_vars.best_total_score: 
                 print("Generation {}: Record Breaker! Showing game ...".format(i))
                 self.showBestNNFromGen(i)
 
-                best_total_score = bestGenScore
-                record_breakers.append(nn_tuple)
+                global_vars.best_total_score = bestGenScore
+                global_vars.record_breakers.append(nn_tuple)
 
         # select best NN from last generation
         print("Generation {}: Playing ...".format(numGenerations))
