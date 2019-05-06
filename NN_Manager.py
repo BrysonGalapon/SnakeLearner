@@ -2,6 +2,7 @@ import random
 from SnakeAI import SnakeAI
 import numpy as np
 import global_vars
+import time
 
 class NN_Manager(object):
     '''
@@ -12,13 +13,17 @@ class NN_Manager(object):
         gen0 = [[adam, 0], [eve, 0]]
 
         # the number of NNs in the latest nonzero generation
-        self.POPULATION_SIZE = 1000
+        self.POPULATION_SIZE = 500
         # the fraction of top-performing NNs that are selected
         self.SELECTION_TOP_FRAC = 0.25
         # approximate frequency of bottom-performing NNs that are selected
         self.SELECTION_BOT_FREQ = 0.2
         # the number of past generations to keep (throw away all other generations)
         self.GENERATION_WINDOW = 3
+        # number of seconds to sleep at the end of each generation
+        self.GENERATION_SLEEP_TIME = 0.4
+        # NN score to exceed to be considered a noteworthy record-breaker
+        self.RECORD_BREAKER_THRESH = 1000
 
         # a list of nn generations
         self.generations = [gen0]
@@ -74,6 +79,14 @@ class NN_Manager(object):
         ai.play(show=True)
 
     '''
+    Display game from given nn
+    '''
+    def showGame(self, nn_tuple, nn_generation):
+        [nn, fitness] = nn_tuple
+        ai = SnakeAI(nn, nn_generation)
+        ai.play(show=True, fitness=fitness)
+
+    '''
     Breeds all NNs left in generation i, creating generation i+1 with 
         POPULATION_SIZE NNs
     '''
@@ -109,6 +122,9 @@ class NN_Manager(object):
 
         # note that i is 1-indexed
         for i in range(1, numGenerations):
+            # don't kill CPU -- sleep for a bit
+            time.sleep(self.GENERATION_SLEEP_TIME)
+
             # release 'old' NNs that occur before the GENERATION WINDOW
             if i > self.GENERATION_WINDOW:
                 self.generations[i-self.GENERATION_WINDOW] = []
@@ -120,10 +136,11 @@ class NN_Manager(object):
             print("Generation {}: Rewarding the strong ;) ...".format(i))
             self.breed(i)
 
-            nn_tuple, bestGenScore = self.getStrongest(i)
-            if bestGenScore > global_vars.best_total_score: 
-                print("Generation {}: Record Breaker! Showing game ...".format(i))
-                self.showBestNNFromGen(i)
+            nn_tuple = self.getStrongest(i)
+            bestNN, bestGenScore = nn_tuple
+            if bestGenScore - global_vars.best_total_score > self.RECORD_BREAKER_THRESH: 
+                print("Generation {}: Significant Record Breaker! Showing game ...".format(i))
+                self.showGame(nn_tuple, i)
 
                 global_vars.best_total_score = bestGenScore
                 global_vars.record_breakers.append(nn_tuple)
@@ -132,16 +149,7 @@ class NN_Manager(object):
         print("Generation {}: Playing ...".format(numGenerations))
         self.play(numGenerations)
         print("Generation {}: Selecting the absolute champion ...".format(numGenerations))
-        best_nn, best_fitness = self.getStrongest(numGenerations)
-        print("Generation {}: best nn score: {}".format(numGenerations, best_fitness))
-        print("Generation {}: Showing chamption NN ...".format(numGenerations))
-        self.showBestNNFromGen(numGenerations)
-
-
-        # select best NN from last generation
-        print("Generation {}: Playing ...".format(numGenerations))
-        self.play(numGenerations)
-        print("Generation {}: Selecting the strongest ...".format(numGenerations))
-        best_nn, best_fitness = self.getStrongest(numGenerations)
-        print("Generation {}: best nn score: ", best_fitness)
+        best_nn_tuple = self.getStrongest(numGenerations)
+        print("Generation {}: Showing champion NN ...".format(numGenerations))
+        self.showGame(best_nn_tuple, numGenerations)
 

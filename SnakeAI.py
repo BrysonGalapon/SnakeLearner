@@ -12,10 +12,12 @@ class SnakeAI(object):
     '''
     Plays a game of Snake. Returns game score.
     '''
-    def play(self, show=False):
+    def play(self, show=False, fitness=None):
         while self.snake.alive():
             if show:
                 print("Generation: {}".format(self.gen))
+                if fitness:
+                    print("Fitness of NN: {}".format(fitness))
                 print(self.snake)
                 time.sleep(0.1)
 
