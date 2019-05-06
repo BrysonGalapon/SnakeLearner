@@ -4,7 +4,7 @@ import numpy as np
 import time
 
 class SnakeAI(object):
-    def __init__(self, nn, width=10, height=10):
+    def __init__(self, nn, width=15, height=15):
         self.nn = nn
         self.snake = Snake(width, height)
 
@@ -15,7 +15,7 @@ class SnakeAI(object):
         while self.snake.alive():
             if show:
                 print(self.snake)
-                time.sleep(0.3)
+                time.sleep(0.1)
 
             state = self.snake.getCurrentState()
             if show:

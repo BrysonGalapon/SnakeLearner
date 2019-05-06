@@ -11,7 +11,7 @@ class NN_Manager(object):
         gen0 = [[adam, 0], [eve, 0]]
 
         # the number of NNs in the latest nonzero generation
-        self.POPULATION_SIZE = 200
+        self.POPULATION_SIZE = 1000
         # the fraction of top-performing NNs that are selected
         self.SELECTION_TOP_FRAC = 0.25
         # approximate frequency of bottom-performing NNs that are selected
