@@ -22,6 +22,9 @@ class NeuralNetwork(object):
         self.weight = np.zeros( (num_inputs, num_outputs) )
         self.bias = np.zeros( (1, num_outputs) )
 
+        # percentage of weights accounted for by bias vector
+        self.BIAS_FRAC = num_outputs/(num_inputs*num_outputs+num_outputs)
+
     '''
     Returns a deep copy of this NN
     '''
@@ -46,14 +49,23 @@ class NeuralNetwork(object):
                                   Mutation.SCALE_LINK])
 
         if mutation == Mutation.ADD_NEW_LINK:
-            # random link
-            i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
-            # random weight
-            rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
-            # assign weight
-            self.weight[i][j] = rw
+            # flip coin to mutate bias link or weight link
+            if random.uniform(0, 1) < BIAS_FRAC: # mutate bias link
+                j = random.randrange(self.num_outputs)
+                # random weight
+                rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+                # assign weight
+                self.bias[0][j] = rw
+            else: # mutate weight link
+                # random link
+                i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
+                # random weight
+                rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+                # assign weight
+                self.weight[i][j] = rw
 
         elif mutation == Mutation.TOGGLE_LINKS:
+            # toggle weight links
             for i in range(self.num_inputs):
                 for j in range(self.num_outputs):
                     # flip coin
@@ -66,13 +78,30 @@ class NeuralNetwork(object):
                         else:
                             self.weight[i][j] = 0
 
+            # toggle bias links
+            for j in range(self.num_outputs):
+                # flip coin
+                if random.uniform(0, 1) < TOGGLE_FREQ:
+                    # turn link on with random weight
+                    rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+                    # assign weight
+                    self.bias[0][j] = rw
+
         elif mutation == Mutation.SCALE_LINK:
-            # random link
-            i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
-            # random scale factor
-            sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
-            # scale weight
-            self.weight[i][j] *= sf
+            # flip coin to mutate bias link or weight link
+            if random.uniform(0, 1) < BIAS_FRAC: # mutate bias link
+                j = random.randrange(self.num_outputs)
+                # random scale factor
+                sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
+                # scale weight
+                self.bias[0][j] *= sf
+            else:
+                # random link
+                i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
+                # random scale factor
+                sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
+                # scale weight
+                self.weight[i][j] *= sf
 
         else:
             raise Error("Unexpected mutation choice: {}".format(mutation))
