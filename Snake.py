@@ -36,6 +36,10 @@ class Snake():
         - downDistanceToObstacle
         - leftDistanceToObstacle
         - rightDistanceToObstacle
+        - nwDistanceToObstacle
+        - neDistanceToObstacle
+        - seDistanceToObstacle
+        - swDistanceToObstacle
         - length of snake
     '''
     def getCurrentState(self):
@@ -85,6 +89,39 @@ class Snake():
             curr_x += 1
             rdo += 1
 
+        # nw distance to obstacle
+        nwdo = 0
+        curr_x, curr_y = head_x-1, head_y-1
+        while (curr_x, curr_y) not in snakeBody and curr_x >= 0 and curr_y >= 0:
+            curr_x -= 1
+            curr_y -= 1
+            nwdo += 1
+
+        # ne distance to obstacle
+        nedo = 0
+        curr_x, curr_y = head_x+1, head_y-1
+        while (curr_x, curr_y) not in snakeBody and curr_x <= self.width-1 and curr_y >= 0:
+            curr_x += 1
+            curr_y -= 1
+            nedo += 1
+
+        # se distance to obstacle
+        sedo = 0
+        curr_x, curr_y = head_x+1, head_y+1
+        while (curr_x, curr_y) not in snakeBody and curr_x <= self.width-1 and curr_y <= self.height-1:
+            curr_x += 1
+            curr_y += 1
+ 
+            sedo += 1
+
+        # sw distance to obstacle
+        swdo = 0
+        curr_x, curr_y = head_x-1, head_y+1
+        while (curr_x, curr_y) not in snakeBody and curr_x >= 0 and curr_y <= self.height-1:
+            curr_x -= 1
+            curr_y += 1
+            swdo += 1
+
         length = len(self.snake_pos)
 
         state_vec = [isHeadGoingUp,
@@ -97,6 +134,10 @@ class Snake():
                      ddo,
                      ldo,
                      rdo,
+                     nwdo,
+                     nedo,
+                     sedo,
+                     swdo,
                      length]
 
         return np.array([state_vec])

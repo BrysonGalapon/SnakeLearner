@@ -4,8 +4,10 @@ from Mutation import Mutation
 
 # really rough guestimates at mean and std -- accuracy isn't really important here,
 #   since we just want to get values somewhat close to 0
-INP_MEAN = np.array([0.5, 0.5, 0.5, 0.5, 3, 3, 3, 3, 3, 3, 0])
-INP_STD = np.array([1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 10])
+INP_MEAN = np.array([0.5, 0.5, 0.5, 0.5, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 0])
+INP_STD = np.array([1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 8, 8, 8, 8, 10])
+
+NUM_SNAKE_OUTPUTS = 4
 
 NEW_LINK_WEIGHT_LIMIT = 2
 SCALE_WEIGHT_LIMIT = 2
@@ -15,21 +17,21 @@ def relu(x):
     return x if x > 0 else 0
 
 class NeuralNetwork(object):
-    def __init__(self, num_inputs, num_outputs):
-        self.num_inputs = num_inputs
-        self.num_outputs = num_outputs
+    def __init__(self):
+        self.num_inputs = INP_MEAN.shape[0]
+        self.num_outputs = NUM_SNAKE_OUTPUTS
 
-        self.weight = np.zeros( (num_inputs, num_outputs) )
-        self.bias = np.zeros( (1, num_outputs) )
+        self.weight = np.zeros( (self.num_inputs, self.num_outputs) )
+        self.bias = np.zeros( (1, self.num_outputs) )
 
         # percentage of weights accounted for by bias vector
-        self.BIAS_FRAC = num_outputs/(num_inputs*num_outputs+num_outputs)
+        self.BIAS_FRAC = self.num_outputs/(self.num_inputs*self.num_outputs+self.num_outputs)
 
     '''
     Returns a deep copy of this NN
     '''
     def deepCopy(self):
-        nn_copy = NeuralNetwork(self.num_inputs, self.num_outputs)
+        nn_copy = NeuralNetwork()
         nn_copy.weight = np.copy(self.weight)
         nn_copy.bias = np.copy(self.bias)
 
