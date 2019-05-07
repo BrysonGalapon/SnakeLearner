@@ -58,28 +58,32 @@ class Snake():
         vdha = -1*(apple_y-head_y)
 
         # up distance to obstacle
-        curr_x, curr_y = head_x, head_y
-        while (curr_x, curr_y) not in snakeBody and curr_y > 0:
+        udo = 0
+        curr_x, curr_y = head_x, head_y-1
+        while (curr_x, curr_y) not in snakeBody and curr_y >= 0:
             curr_y -= 1
-        udo = -1*(curr_y-head_y)
+            udo += 1
 
         # down distance to obstacle
-        curr_x, curr_y = head_x, head_y
-        while (curr_x, curr_y) not in snakeBody and curr_y < self.height-1:
+        ddo = 0
+        curr_x, curr_y = head_x, head_y+1
+        while (curr_x, curr_y) not in snakeBody and curr_y <= self.height-1:
             curr_y += 1
-        ddo = -1*(curr_y-head_y)
+            ddo += 1
 
         # left distance to obstacle
-        curr_x, curr_y = head_x, head_y
-        while (curr_x, curr_y) not in snakeBody and curr_x > 0:
+        ldo = 0
+        curr_x, curr_y = head_x-1, head_y
+        while (curr_x, curr_y) not in snakeBody and curr_x >= 0:
             curr_x -= 1
-        ldo = curr_x-head_x
+            ldo += 1
 
-        # left distance to obstacle
-        curr_x, curr_y = head_x, head_y
-        while (curr_x, curr_y) not in snakeBody and curr_x < self.width-1:
+        # right distance to obstacle
+        rdo = 0
+        curr_x, curr_y = head_x+1, head_y
+        while (curr_x, curr_y) not in snakeBody and curr_x <= self.width-1:
             curr_x += 1
-        rdo = curr_x-head_x
+            rdo += 1
 
         length = len(self.snake_pos)
 
