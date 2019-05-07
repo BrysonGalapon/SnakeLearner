@@ -10,7 +10,8 @@ class SnakeAI(object):
         self.snake = Snake(width, height)
 
         # time in seconds to wait for each step
-        self.STEP_WAIT_TIME = 0.0001
+        #self.STEP_WAIT_TIME = 0.0001
+        self.STEP_WAIT_TIME = 0.0000
 
     '''
     Plays a game of Snake. Returns game score.

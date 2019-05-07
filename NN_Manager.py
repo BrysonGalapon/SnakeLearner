@@ -3,6 +3,7 @@ from SnakeAI import SnakeAI
 import numpy as np
 import global_vars
 import time
+from multiprocessing import Process
 
 class NN_Manager(object):
     '''
@@ -26,6 +27,8 @@ class NN_Manager(object):
         self.RECORD_BREAKER_THRESH = 1000
         # the number of games for an NN to play to get overall fitness score
         self.NUM_NN_GAMES = 3
+        # the number of cores to use when playing NN games
+        self.NUM_PLAY_PROC = 5
 
         # a list of nn generations
         self.generations = [gen0]
@@ -34,17 +37,42 @@ class NN_Manager(object):
     Obtains the fitness score for each NN
     '''
     def play(self, i):
-        for nn_tuple in self.generations[i]:
-            nn, _ = nn_tuple
-            ai = SnakeAI(nn, i)
-            tot_score = 0
-            for _ in range(self.NUM_NN_GAMES):
-                # get and assign NN fitness 
-                score = ai.play()
-                tot_score += score
+        gen_i = self.generations[i]
+        n = len(gen_i)
 
-            # assign NN fitness as the average
-            nn_tuple[1] = tot_score / self.NUM_NN_GAMES
+        # size of each chunk for each process to consume
+        off = int(n/self.NUM_PLAY_PROC)
+
+        # define function for each process to run
+        def proc_play(chunk_index):
+            start = chunk_index*off
+            end = (chunk_index+1)*off
+            for index in range(start, end):
+                nn_tuple = gen_i[index]
+                nn, _ = nn_tuple
+                tot_score = 0
+                for _ in range(self.NUM_NN_GAMES):
+                    # create a new game with same NN
+                    ai = SnakeAI(nn, i)
+                    # increment score
+                    tot_score += ai.play()
+
+                # assign NN fitness as the average
+                nn_tuple[1] = tot_score / self.NUM_NN_GAMES
+
+        # collect all processes
+        processes = []
+        for chunk_index in range(self.NUM_PLAY_PROC):
+            p = Process(target=proc_play, args=(chunk_index, ))
+            processes.append(p)
+
+        # start all processes
+        for p in processes:
+            p.start()
+
+        # join all processes
+        for p in processes:
+            p.join()
 
     '''
     Emulates "survival of the fittest". Removes NNs in generation i that are "unfit"
