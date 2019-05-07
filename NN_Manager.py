@@ -24,6 +24,8 @@ class NN_Manager(object):
         self.GENERATION_SLEEP_TIME = 0.4
         # NN score to exceed to be considered a noteworthy record-breaker
         self.RECORD_BREAKER_THRESH = 1000
+        # the number of games for an NN to play to get overall fitness score
+        self.NUM_NN_GAMES = 3
 
         # a list of nn generations
         self.generations = [gen0]
@@ -35,10 +37,14 @@ class NN_Manager(object):
         for nn_tuple in self.generations[i]:
             nn, _ = nn_tuple
             ai = SnakeAI(nn, i)
+            tot_score = 0
+            for _ in range(self.NUM_NN_GAMES):
+                # get and assign NN fitness 
+                score = ai.play()
+                tot_score += score
 
-            # get and assign NN fitness 
-            fitness = ai.play()
-            nn_tuple[1] = fitness
+            # assign NN fitness as the average
+            nn_tuple[1] = tot_score / self.NUM_NN_GAMES
 
     '''
     Emulates "survival of the fittest". Removes NNs in generation i that are "unfit"
