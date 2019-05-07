@@ -9,6 +9,9 @@ class SnakeAI(object):
         self.gen = generation
         self.snake = Snake(width, height)
 
+        # time in seconds to wait for each step
+        self.STEP_WAIT_TIME = 0.0001
+
     '''
     Plays a game of Snake. Returns game score.
     '''
@@ -31,6 +34,9 @@ class SnakeAI(object):
             if show:
                 print("NN chose: ", action)
             self.snake.step(action)
+
+            # sleep to not override CPU
+            time.sleep(self.STEP_WAIT_TIME)
 
         return self.snake.score()
 

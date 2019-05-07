@@ -13,7 +13,7 @@ class NN_Manager(object):
         gen0 = [[adam, 0], [eve, 0]]
 
         # the number of NNs in the latest nonzero generation
-        self.POPULATION_SIZE = 500
+        self.POPULATION_SIZE = 1000
         # the fraction of top-performing NNs that are selected
         self.SELECTION_TOP_FRAC = 0.25
         # approximate frequency of bottom-performing NNs that are selected
@@ -144,6 +144,10 @@ class NN_Manager(object):
 
                 global_vars.best_total_score = bestGenScore
                 global_vars.record_breakers.append(nn_tuple)
+
+            if i % 50 == 0:
+                print("Generation {}: Mandatory  game display ...".format(i))
+                self.showGame(nn_tuple, i)
 
         # select best NN from last generation
         print("Generation {}: Playing ...".format(numGenerations))
