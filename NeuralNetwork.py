@@ -28,6 +28,29 @@ class NeuralNetwork(object):
         self.BIAS_FRAC = self.num_outputs/(self.num_inputs*self.num_outputs+self.num_outputs)
 
     '''
+    Saves the state of a given NN to a specified location
+    '''
+    @staticmethod
+    def save(nn, savePath):
+        np.save(savePath+"weight.npy", self.weight)
+        np.save(savePath+"bias.npy", self.bias)
+
+    '''
+    Loads the state of a given NN from a specified location and returns it
+    '''
+    @staticmethod
+    def load(loadPath):
+        # extract matrices from files
+        weight = np.load(loadPath+"weight.npy")
+        bias = np.load(loadPath+"bias.npy")
+
+        # initialize the NN with correct weights
+        nn = NeuralNetwork()
+        nn.weight = weight
+        nn.bias = bias
+        return nn
+
+    '''
     Returns a deep copy of this NN
     '''
     def deepCopy(self):
