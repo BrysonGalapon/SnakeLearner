@@ -32,8 +32,8 @@ class NeuralNetwork(object):
     '''
     @staticmethod
     def save(nn, savePath):
-        np.save(savePath+"weight.npy", self.weight)
-        np.save(savePath+"bias.npy", self.bias)
+        np.save(savePath+"weight.npy", nn.weight)
+        np.save(savePath+"bias.npy", nn.bias)
 
     '''
     Loads the state of a given NN from a specified location and returns it

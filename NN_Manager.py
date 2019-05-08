@@ -183,9 +183,9 @@ class NN_Manager(object):
 
             print("Generation {}: Playing ...".format(i))
             self.play(i)
-            print("Generation {}: Killing off the weak ...".format(i))
+            print("Generation {}: Selection -- Killing off the weak ...".format(i))
             self.selection(i)
-            print("Generation {}: Rewarding the strong ;) ...".format(i))
+            print("Generation {}: Breeding -- Rewarding the strong ;) ...".format(i))
             self.breed(i)
 
             nn_tuple = self.getStrongest(i)
@@ -193,19 +193,26 @@ class NN_Manager(object):
             if bestGenScore - global_vars.best_total_score > self.RECORD_BREAKER_THRESH: 
                 print("Generation {}: Significant Record Breaker! Showing game ...".format(i))
                 self.showGame(nn_tuple, i)
+                # save the nn
+                self.save(bestNN, i)
 
                 global_vars.best_total_score = bestGenScore
                 global_vars.record_breakers.append(nn_tuple)
 
-            if i % 50 == 0:
-                print("Generation {}: Mandatory  game display ...".format(i))
+            if i % 10 == 0:
+                print("Generation {}: Mandatory game display ...".format(i))
                 self.showGame(nn_tuple, i)
+                # save the nn
+                self.save(bestNN, i)
 
         # select best NN from last generation
         print("Generation {}: Playing ...".format(numGenerations))
         self.play(numGenerations)
         print("Generation {}: Selecting the absolute champion ...".format(numGenerations))
         best_nn_tuple = self.getStrongest(numGenerations)
+        champion_nn, _ = best_nn_tuple
         print("Generation {}: Showing champion NN ...".format(numGenerations))
         self.showGame(best_nn_tuple, numGenerations)
+        # save the nn
+        self.save(champion_nn, i)
 
