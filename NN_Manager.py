@@ -3,6 +3,9 @@ from SnakeAI import SnakeAI
 import numpy as np
 import global_vars
 import time
+import os
+import shutil
+from NeuralNetwork import NeuralNetwork
 
 class NN_Manager(object):
     '''
@@ -26,9 +29,15 @@ class NN_Manager(object):
         self.RECORD_BREAKER_THRESH = 1000
         # the number of games for an NN to play to get overall fitness score
         self.NUM_NN_GAMES = 3
+        # the directory to save all NN models to
+        self.NN_MODEL_FOLDER = "./NNs"
 
         # a list of nn generations
         self.generations = [gen0]
+
+        # clean up all existing models
+        self.deleteDir(self.NN_MODEL_FOLDER)
+        self.createDir(self.NN_MODEL_FOLDER)
 
     '''
     Obtains the fitness score for each NN
@@ -68,6 +77,27 @@ class NN_Manager(object):
 
         # overwrite generation with only selected NNs
         self.generations[i] = chosen_ones
+
+    '''
+    Attempts to create an empty directory. If the directory exists, does nothing.
+    '''
+    def createDir(self, path):
+        try:
+            os.mkdir(path)
+        except:
+            # ignore any errors
+            pass
+
+    '''
+    Attempts to delete a directory (possibly nonempty). If the directory does not exist,
+        does nothing.
+    '''
+    def deleteDir(self, path):
+        try:
+            shutil.rmtree(path)
+        except:
+            # ignore any errors
+            pass
 
     '''
     Obtains the strongest NN in generation i
@@ -114,6 +144,22 @@ class NN_Manager(object):
             child.mutate()
 
             next_gen.append( [child, None] )
+
+    '''
+    Saves an NN that was part of generation i
+    '''
+    def save(self, nn, i):
+        savePath = "{}/gen{}/".format(self.NN_MODEL_FOLDER, i)
+        self.createDir(savePath)
+        NeuralNetwork.save(nn, savePath)
+
+    '''
+    Loads an NN that was part of generation i
+    '''
+    def load(self, i):
+        loadPath = "{}/gen{}/".format(self.NN_MODEL_FOLDER, i)
+        nn = NeuralNetwork.load(loadPath)
+        return nn
 
     '''
     Simulates evolution for a fixed number of generations
