@@ -1,6 +1,7 @@
 import random
 import numpy as np
 from Mutation import Mutation
+from LinkType import LinkType
 
 # really rough guestimates at mean and std -- accuracy isn't really important here,
 #   since we just want to get values somewhat close to 0
@@ -29,9 +30,6 @@ class NeuralNetwork(object):
         # output layer
         self.w2 = np.zeros( (self.num_hidden, self.num_outputs) )
         self.b2 = np.zeros( (1, self.num_outputs) )
-
-        # percentage of weights accounted for by bias vector
-        #self.BIAS_FRAC = self.num_outputs/(self.num_inputs*self.num_outputs+self.num_outputs)
 
     '''
     Saves the state of a given NN to a specified location
@@ -89,62 +87,58 @@ class NeuralNetwork(object):
                                   Mutation.SCALE_LINK])
 
         if mutation == Mutation.ADD_NEW_LINK:
-            # flip coin to mutate bias link or weight link
-            if random.uniform(0, 1) < self.BIAS_FRAC: # mutate bias link
-                j = random.randrange(self.num_outputs)
-                # random weight
-                rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
-                # assign weight
-                self.bias[0][j] = rw
-            else: # mutate weight link
-                # random link
-                i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
-                # random weight
-                rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
-                # assign weight
-                self.weight[i][j] = rw
+            linkType = self.selectUniformLink()
+
+            if linkType == LinkType.W1:
+                i, j = NeuralNetwork.selectRandom2DCoord(*w1.shape)
+                # assign random weight
+                self.w1[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+            elif linkType == LinkType.B1:
+                i, j = NeuralNetwork.selectRandom2DCoord(*b1.shape)
+                # assign random weight
+                self.b1[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+            elif linkType == LinkType.W2:
+                i, j = NeuralNetwork.selectRandom2DCoord(*w2.shape)
+                # assign random weight
+                self.w2[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+            elif linkType == LinkType.B2:
+                i, j = NeuralNetwork.selectRandom2DCoord(*b2.shape)
+                # assign random weight
+                self.b2[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+            else:
+                raise Error("Unexpected link choice: {}\n".format(linkType))
 
         elif mutation == Mutation.TOGGLE_LINKS:
-            # toggle weight links
-            for i in range(self.num_inputs):
-                for j in range(self.num_outputs):
-                    # flip coin
-                    if random.uniform(0, 1) < TOGGLE_FREQ:
-                        if self.weight[i][j] == 0:
-                            # turn link on with random weight
-                            rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
-                            # assign weight
-                            self.weight[i][j] = rw
-                        else:
-                            self.weight[i][j] = 0
-
-            # toggle bias links
-            for j in range(self.num_outputs):
-                # flip coin
-                if random.uniform(0, 1) < TOGGLE_FREQ:
-                    # turn link on with random weight
-                    rw = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
-                    # assign weight
-                    self.bias[0][j] = rw
+            # toggle all links at the given TOGGLE_FREQ
+            NeuralNetwork.toggleMatrix(self.w1)
+            NeuralNetwork.toggleMatrix(self.b1)
+            NeuralNetwork.toggleMatrix(self.w2)
+            NeuralNetwork.toggleMatrix(self.b2)
 
         elif mutation == Mutation.SCALE_LINK:
-            # flip coin to mutate bias link or weight link
-            if random.uniform(0, 1) < self.BIAS_FRAC: # mutate bias link
-                j = random.randrange(self.num_outputs)
-                # random scale factor
-                sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
-                # scale weight
-                self.bias[0][j] *= sf
+            linkType = self.selectUniformLink()
+
+            if linkType == LinkType.W1:
+                i, j = NeuralNetwork.selectRandom2DCoord(*w1.shape)
+                # scale by random weight
+                self.w1[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
+            elif linkType == LinkType.B1:
+                i, j = NeuralNetwork.selectRandom2DCoord(*b1.shape)
+                # scale by random weight
+                self.b1[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
+            elif linkType == LinkType.W2:
+                i, j = NeuralNetwork.selectRandom2DCoord(*w2.shape)
+                # scale by random weight
+                self.w2[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
+            elif linkType == LinkType.B2:
+                i, j = NeuralNetwork.selectRandom2DCoord(*b2.shape)
+                # scale by random weight
+                self.b2[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
             else:
-                # random link
-                i, j = random.randrange(self.num_inputs), random.randrange(self.num_outputs)
-                # random scale factor
-                sf = random.uniform(0, SCALE_WEIGHT_LIMIT)
-                # scale weight
-                self.weight[i][j] *= sf
+                raise Error("Unexpected link choice: {}\n".format(linkType))
 
         else:
-            raise Error("Unexpected mutation choice: {}".format(mutation))
+            raise Error("Unexpected mutation choice: {}\n".format(mutation))
 
     '''
     Performs a cross-over between this NN and another NN, and returns the crossed over NN.
@@ -155,10 +149,10 @@ class NeuralNetwork(object):
         child = self.deepCopy()
 
         # cross all matrices
-        crossMatrix(child.w1, other.w1)
-        crossMatrix(child.b1, other.b1)
-        crossMatrix(child.w2, other.w2)
-        crossMatrix(child.b2, other.b2)
+        NeuralNetwork.crossMatrix(child.w1, other.w1)
+        NeuralNetwork.crossMatrix(child.b1, other.b1)
+        NeuralNetwork.crossMatrix(child.w2, other.w2)
+        NeuralNetwork.crossMatrix(child.b2, other.b2)
         return child
 
     '''
@@ -172,6 +166,86 @@ class NeuralNetwork(object):
             for j in range(num_cols):
                 if m1[i][j] == 0 and m2[i][j] != 0:
                     m1[i][j] = m2[i][j]
+
+    '''
+    Selects link type uniformly at random -- one of:
+        - W1 link
+        - B1 link
+        - W2 link
+        - B2 link
+    and returns the link type
+    '''
+    def selectUniformLink(self):
+        # enumerate each cell as an integer in the flat range [0, totCells)
+        numW1cells = NeuralNetwork.numCells(self.w1)
+        numB1cells = NeuralNetwork.numCells(self.b1)
+        numW2cells = NeuralNetwork.numCells(self.w2)
+        numB2cells = NeuralNetwork.numCells(self.b2)
+
+        totCells = numW1cells+numB1cells+numW2cells+numB2cells
+        
+        # choose a cell (integer) uniformly in the flat range
+        cellInt = random.randrange(totCells)
+
+        # cut the flat range into chunks corresponding to link type, and
+        #   return the chunk that the chosen cell lies in
+        flatRangeSpace = [(LinkType.W1, numW1cells),
+                          (LinkType.B1, numB1cells),
+                          (LinkType.W2, numW2cells),
+                          (LinkType.B2, numB2cells)]
+
+        for (linkType, numLinks) in flatRangeSpace:
+            if cellInt < numLinks:
+                # chosen integer fell in chunk range
+                return linkType
+            else:
+                # translate flat range by excluded chunk size
+                cellInt -= numLinks
+
+        raise Error("Unable to select a uniform link -- chose a cell outside of possible range")
+
+    '''
+    Counts the number of cells in the given matrix
+    '''
+    @staticmethod
+    def numCells(m):
+        num_rows, num_cols = m.shape
+        return num_rows*num_cols
+
+    '''
+    Selects a random (i, j) cell
+    '''
+    @staticmethod
+    def selectRandom2DCoord(num_rows, num_cols):
+        i = random.randrange(num_rows)
+        j = random.randrange(num_cols)
+        return i, j
+    
+    '''
+    Toggles all elements of the matrix according to the TOGGLE_FREQ. To 'toggle' means
+        that if an element is zero, it is assigned a random value, and 
+        if an element is nonzero, it is assigned a zero value
+    '''
+    @staticmethod
+    def toggleMatrix(m):
+        num_rows, num_cols = m.shape
+
+        for i in range(num_rows):
+            for j in range(num_cols):
+                # flip coin
+                if random.uniform(0, 1) < TOGGLE_FREQ:
+                    NeuralNetwork.toggleMatrixLoc(m, i, j)
+
+    '''
+    Toggles the value at location (i, j) in matrix m
+    '''
+    @staticmethod
+    def toggleMatrixLoc(m, i, j):
+        if m[i][j] == 0:
+            # assign random weight
+            m[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
+        else:
+            m[i][j] = 0
 
     '''
     Perform an NN calculation. 
