@@ -38,8 +38,11 @@ class NeuralNetwork(object):
     '''
     @staticmethod
     def save(nn, savePath):
-        np.save(savePath+"weight.npy", nn.weight)
-        np.save(savePath+"bias.npy", nn.bias)
+        # save the weights of all the matrices
+        np.save(savePath+"w1.npy", nn.w1)
+        np.save(savePath+"b1.npy", nn.b1)
+        np.save(savePath+"w2.npy", nn.w2)
+        np.save(savePath+"b2.npy", nn.b2)
 
     '''
     Loads the state of a given NN from a specified location and returns it
@@ -47,13 +50,17 @@ class NeuralNetwork(object):
     @staticmethod
     def load(loadPath):
         # extract matrices from files
-        weight = np.load(loadPath+"weight.npy")
-        bias = np.load(loadPath+"bias.npy")
+        w1 = np.load(loadPath+"w1.npy")
+        b1 = np.load(loadPath+"b1.npy")
+        w2 = np.load(loadPath+"w2.npy")
+        b2 = np.load(loadPath+"b2.npy")
 
         # initialize the NN with correct weights
         nn = NeuralNetwork()
-        nn.weight = weight
-        nn.bias = bias
+        nn.w1 = w1
+        nn.b1 = b1
+        nn.w2 = w2
+        nn.b2 = b2
         return nn
 
     '''
@@ -61,8 +68,10 @@ class NeuralNetwork(object):
     '''
     def deepCopy(self):
         nn_copy = NeuralNetwork()
-        nn_copy.weight = np.copy(self.weight)
-        nn_copy.bias = np.copy(self.bias)
+        nn_copy.w1 = np.copy(self.w1)
+        nn_copy.b1 = np.copy(self.b1)
+        nn_copy.w2 = np.copy(self.w2)
+        nn_copy.b2 = np.copy(self.b2)
 
         return nn_copy
 
