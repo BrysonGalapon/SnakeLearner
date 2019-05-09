@@ -196,9 +196,13 @@ class NeuralNetwork(object):
         outStr = ""
         outStr += "Num Input Nodes: {}\n".format(self.num_inputs)
         outStr += "Num Output Nodes: {}\n".format(self.num_outputs)
-        outStr += "Weight Matrix: \n"
-        outStr += str(self.weight) + "\n"
-        outStr += "Bias Matrix: \n"
-        outStr += str(self.bias) + "\n"
+        outStr += "W1 Matrix: \n"
+        outStr += str(self.w1) + "\n"
+        outStr += "B1 Matrix: \n"
+        outStr += str(self.b1) + "\n"
+        outStr += "W2 Matrix: \n"
+        outStr += str(self.w2) + "\n"
+        outStr += "B2 Matrix: \n"
+        outStr += str(self.b2) + "\n"
 
         return outStr
