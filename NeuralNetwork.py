@@ -20,12 +20,18 @@ class NeuralNetwork(object):
     def __init__(self):
         self.num_inputs = INP_MEAN.shape[0]
         self.num_outputs = NUM_SNAKE_OUTPUTS
+        self.num_hidden = 2*self.num_inputs
 
-        self.weight = np.zeros( (self.num_inputs, self.num_outputs) )
-        self.bias = np.zeros( (1, self.num_outputs) )
+        # first layer
+        self.w1 = np.zeros( (self.num_inputs, self.num_hidden) )
+        self.b1 = np.zeros( (1, self.num_hidden) )
+
+        # output layer
+        self.w2 = np.zeros( (self.num_hidden, self.num_outputs) )
+        self.b2 = np.zeros( (1, self.num_outputs) )
 
         # percentage of weights accounted for by bias vector
-        self.BIAS_FRAC = self.num_outputs/(self.num_inputs*self.num_outputs+self.num_outputs)
+        #self.BIAS_FRAC = self.num_outputs/(self.num_inputs*self.num_outputs+self.num_outputs)
 
     '''
     Saves the state of a given NN to a specified location
