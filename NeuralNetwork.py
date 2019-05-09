@@ -90,19 +90,19 @@ class NeuralNetwork(object):
             linkType = self.selectUniformLink()
 
             if linkType == LinkType.W1:
-                i, j = NeuralNetwork.selectRandom2DCoord(*w1.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.w1.shape)
                 # assign random weight
                 self.w1[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
             elif linkType == LinkType.B1:
-                i, j = NeuralNetwork.selectRandom2DCoord(*b1.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.b1.shape)
                 # assign random weight
                 self.b1[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
             elif linkType == LinkType.W2:
-                i, j = NeuralNetwork.selectRandom2DCoord(*w2.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.w2.shape)
                 # assign random weight
                 self.w2[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
             elif linkType == LinkType.B2:
-                i, j = NeuralNetwork.selectRandom2DCoord(*b2.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.b2.shape)
                 # assign random weight
                 self.b2[i][j] = random.uniform(-1*NEW_LINK_WEIGHT_LIMIT, NEW_LINK_WEIGHT_LIMIT)
             else:
@@ -119,19 +119,19 @@ class NeuralNetwork(object):
             linkType = self.selectUniformLink()
 
             if linkType == LinkType.W1:
-                i, j = NeuralNetwork.selectRandom2DCoord(*w1.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.w1.shape)
                 # scale by random weight
                 self.w1[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
             elif linkType == LinkType.B1:
-                i, j = NeuralNetwork.selectRandom2DCoord(*b1.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.b1.shape)
                 # scale by random weight
                 self.b1[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
             elif linkType == LinkType.W2:
-                i, j = NeuralNetwork.selectRandom2DCoord(*w2.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.w2.shape)
                 # scale by random weight
                 self.w2[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
             elif linkType == LinkType.B2:
-                i, j = NeuralNetwork.selectRandom2DCoord(*b2.shape)
+                i, j = NeuralNetwork.selectRandom2DCoord(*self.b2.shape)
                 # scale by random weight
                 self.b2[i][j] *= random.uniform(0, SCALE_WEIGHT_LIMIT)
             else:
