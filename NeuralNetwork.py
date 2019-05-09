@@ -154,19 +154,24 @@ class NeuralNetwork(object):
         # prioritize the current genes by copying them over first
         child = self.deepCopy()
 
-        # cross over weights
-        for i in range(self.num_inputs):
-            for j in range(self.num_outputs):
-                # only express other genes if they haven't already been set
-                if other.weight[i][j] != 0 and child.weight[i][j] == 0:
-                    child.weight[i][j] = other.weight[i][j]
-
-        # cross over biases
-        for j in range(self.num_outputs):
-            # only express other genes if they haven't already been set
-            if other.bias[0][j] != 0 and child.bias[0][j] == 0:
-                child.bias[0][j] = other.bias[0][j]
+        # cross all matrices
+        crossMatrix(child.w1, other.w1)
+        crossMatrix(child.b1, other.b1)
+        crossMatrix(child.w2, other.w2)
+        crossMatrix(child.b2, other.b2)
         return child
+
+    '''
+    Mutates zero entries in m1 with corresponding entries in m2 
+    '''
+    @staticmethod
+    def crossMatrix(m1, m2):
+        num_rows, num_cols = m1.shape
+
+        for i in range(num_rows):
+            for j in range(num_cols):
+                if m1[i][j] == 0 and m2[i][j] != 0:
+                    m1[i][j] = m2[i][j]
 
     '''
     Perform an NN calculation. 
