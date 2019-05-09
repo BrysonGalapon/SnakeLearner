@@ -179,8 +179,15 @@ class NeuralNetwork(object):
     '''
     def output(self, inp):
         norm_inp = self.normalize(inp)
-        z = np.dot(norm_inp, self.weight)+self.bias
-        return z
+
+        # apply first hidden layer
+        z1 = np.dot(norm_inp, self.w1)+self.b1
+        fz1 = np.apply_along_axis(relu, axis=0, arr=z1)
+
+        # apply output layer
+        z2 = np.dot(fz1, self.w2)+self.b2
+
+        return z2
 
     def normalize(self, x):
         return (x-INP_MEAN)/INP_STD
