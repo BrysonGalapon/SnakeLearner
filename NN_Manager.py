@@ -48,12 +48,12 @@ class NN_Manager(object):
     def play(self, i):
         for nn_tuple in self.generations[i]:
             nn, _ = nn_tuple
-            ai = SnakeAI(nn, i)
             tot_score = 0
             for _ in range(self.NUM_NN_GAMES):
-                # get and assign NN fitness 
-                score = ai.play()
-                tot_score += score
+                # create new NN game
+                ai = SnakeAI(nn, i)
+                # increment NN score
+                tot_score += ai.play()
 
             # assign NN fitness as the average
             nn_tuple[1] = tot_score / self.NUM_NN_GAMES
