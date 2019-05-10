@@ -10,7 +10,9 @@ class SnakeAI(object):
         self.snake = Snake(width, height)
 
         # time in seconds to wait for each step
-        self.STEP_WAIT_TIME = 0.0001
+        self.STEP_WAIT_TIME = 0.000005
+        # time in seconds to load each snake game frame
+        self.FRAME_PERIOD = 0.1
 
     '''
     Plays a game of Snake. Returns game score.
@@ -22,7 +24,7 @@ class SnakeAI(object):
                 if fitness:
                     print("Fitness of NN: {}".format(fitness))
                 print(self.snake)
-                time.sleep(0.1)
+                time.sleep(self.FRAME_PERIOD)
 
             state = self.snake.getCurrentState()
             if show:
