@@ -17,12 +17,13 @@ if __name__ == "__main__":
     gen = int(sys.argv[1])
 
     try:
-        loadPath = "./NNs/gen{}/".format(gen)
+        loadPath = "./save_models/gen{}/".format(gen)
         nn = NeuralNetwork.load(loadPath)
         ai = SnakeAI(nn, gen)
         ai.play(show=True)
     except Exception as e:
         print(e)
+        print("Have you tried putting the gen folder in the `save_models` directory?")
         sys.exit(1)
 
 
