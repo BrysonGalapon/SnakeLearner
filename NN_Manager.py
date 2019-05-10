@@ -6,6 +6,7 @@ import time
 import os
 import shutil
 from NeuralNetwork import NeuralNetwork
+import gc
 
 class NN_Manager(object):
     '''
@@ -31,6 +32,8 @@ class NN_Manager(object):
         self.NUM_NN_GAMES = 3
         # the directory to save all NN models to
         self.NN_MODEL_FOLDER = "./NNs"
+        # the number of generations to require an NN save
+        self.NN_SAVE_FREQ = 10
 
         # a list of nn generations
         self.generations = [gen0]
@@ -162,6 +165,41 @@ class NN_Manager(object):
         return nn
 
     '''
+    Cleans up the old and unused NN weights
+    '''
+    def releaseOld(self, i):
+        if i > self.GENERATION_WINDOW:
+            self.generations[i-self.GENERATION_WINDOW] = []
+        gc.collect()
+
+    '''
+    Perform useful training/analytics/persistence work:
+        * save NNs that perform much better than others
+        * save NNs regularly, to allow viewer to see NN progression
+        * show NN games to make watching training entertaining
+    '''
+    def postProcess(self, i):
+        nn_tuple = self.getStrongest(i)
+        bestNN, bestGenScore = nn_tuple
+
+        # show and save exceedingly successful NNs
+        if bestGenScore - global_vars.best_total_score > self.RECORD_BREAKER_THRESH: 
+            print("Generation {}: Significant Record Breaker! Showing game ...".format(i))
+            self.showGame(nn_tuple, i)
+            self.save(bestNN, i)
+
+            # update global high score
+            global_vars.best_total_score = bestGenScore
+            global_vars.record_breakers.append(nn_tuple)
+
+        # show and save NNs at regular intervals
+        if i % self.NN_SAVE_FREQ == 0:
+            print("Generation {}: Mandatory game display ...".format(i))
+            self.showGame(nn_tuple, i)
+            # save the nn
+            self.save(bestNN, i)
+
+    '''
     Simulates evolution for a fixed number of generations
     '''
     def evolve(self, numGenerations=10):
@@ -178,8 +216,7 @@ class NN_Manager(object):
             time.sleep(self.GENERATION_SLEEP_TIME)
 
             # release 'old' NNs that occur before the GENERATION WINDOW
-            if i > self.GENERATION_WINDOW:
-                self.generations[i-self.GENERATION_WINDOW] = []
+            self.releaseOld(i)
 
             print("Generation {}: Playing ...".format(i))
             self.play(i)
@@ -188,22 +225,9 @@ class NN_Manager(object):
             print("Generation {}: Breeding -- Rewarding the strong ;) ...".format(i))
             self.breed(i)
 
-            nn_tuple = self.getStrongest(i)
-            bestNN, bestGenScore = nn_tuple
-            if bestGenScore - global_vars.best_total_score > self.RECORD_BREAKER_THRESH: 
-                print("Generation {}: Significant Record Breaker! Showing game ...".format(i))
-                self.showGame(nn_tuple, i)
-                # save the nn
-                self.save(bestNN, i)
-
-                global_vars.best_total_score = bestGenScore
-                global_vars.record_breakers.append(nn_tuple)
-
-            if i % 10 == 0:
-                print("Generation {}: Mandatory game display ...".format(i))
-                self.showGame(nn_tuple, i)
-                # save the nn
-                self.save(bestNN, i)
+            # * make it entertaining for training viewers
+            # * persist some NNs
+            self.postProcess(i)
 
         # select best NN from last generation
         print("Generation {}: Playing ...".format(numGenerations))
