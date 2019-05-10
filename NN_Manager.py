@@ -19,9 +19,9 @@ class NN_Manager(object):
         # the number of NNs in the latest nonzero generation
         self.POPULATION_SIZE = 1000
         # the fraction of top-performing NNs that are selected
-        self.SELECTION_TOP_FRAC = 0.25
+        self.SELECTION_TOP_FRAC = 0.07
         # approximate frequency of bottom-performing NNs that are selected
-        self.SELECTION_BOT_FREQ = 0.2
+        self.SELECTION_BOT_FREQ = 0.01
         # the number of past generations to keep (throw away all other generations)
         self.GENERATION_WINDOW = 3
         # number of seconds to sleep at the end of each generation
@@ -29,7 +29,7 @@ class NN_Manager(object):
         # NN score to exceed to be considered a noteworthy record-breaker
         self.RECORD_BREAKER_THRESH = 1000
         # the number of games for an NN to play to get overall fitness score
-        self.NUM_NN_GAMES = 3
+        self.NUM_NN_GAMES = 5
         # the directory to save all NN models to
         self.NN_MODEL_FOLDER = "./NNs"
         # the number of generations to require an NN save
@@ -133,6 +133,7 @@ class NN_Manager(object):
         curr_gen = self.generations[i]
         next_gen = self.generations[i+1]
 
+        # breed until next generation has enough NNs
         while len(next_gen) < self.POPULATION_SIZE:
             # select 2 parents uniformly at random
             [[p1, f1], [p2, f2]] = random.sample(curr_gen, 2)
@@ -218,11 +219,11 @@ class NN_Manager(object):
             # release 'old' NNs that occur before the GENERATION WINDOW
             self.releaseOld(i)
 
-            print("Generation {}: Playing ...".format(i))
+            print("Generation {}: Playing. Survival of the fittest ...".format(i))
             self.play(i)
-            print("Generation {}: Selection -- Killing off the weak ...".format(i))
+            print("Generation {}: Selection. Killing off the weak ...".format(i))
             self.selection(i)
-            print("Generation {}: Breeding -- Rewarding the strong ;) ...".format(i))
+            print("Generation {}: Breeding. Rewarding the strong ;) ...".format(i))
             self.breed(i)
 
             # * make it entertaining for training viewers
